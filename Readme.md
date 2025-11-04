@@ -210,6 +210,60 @@ API_PORT=8000
 WEB_PORT=3000
 QDRANT_HTTP_PORT=6333
 QDRANT_GRPC_PORT=6334
+
+# Storage Configuration
+QDRANT_STORAGE_PATH=./qdrant_storage  # Set to empty for S3-only mode
+
+# S3 Storage (Optional - for snapshots and backups)
+S3_BUCKET=your-bucket-name
+S3_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+S3_ENDPOINT=  # Optional: for S3-compatible services like MinIO
+```
+
+### S3 Storage Configuration
+
+Qdrant supports S3 for snapshots and backups. To configure S3 storage:
+
+**1. For AWS S3:**
+```bash
+# In your .env file
+S3_BUCKET=my-qdrant-backups
+S3_REGION=us-east-1
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+```
+
+**2. For S3-Compatible Services (MinIO, DigitalOcean Spaces, etc.):**
+```bash
+# In your .env file
+S3_BUCKET=my-qdrant-backups
+S3_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+S3_ENDPOINT=https://nyc3.digitaloceanspaces.com
+```
+
+**3. S3-Only Mode (No Local Storage):**
+```bash
+# In docker-compose.yaml, comment out the volumes line:
+# volumes:
+#   - ${QDRANT_STORAGE_PATH:-./qdrant_storage}:/qdrant/storage
+```
+
+**Managing Snapshots with S3:**
+```bash
+# Create a snapshot (automatically uploaded to S3 if configured)
+curl -X POST "http://localhost:6333/collections/{collection_name}/snapshots"
+
+# List snapshots
+curl "http://localhost:6333/collections/{collection_name}/snapshots"
+
+# Restore from snapshot
+curl -X PUT "http://localhost:6333/collections/{collection_name}/snapshots/upload" \
+  -H "Content-Type: application/json" \
+  -d '{"location": "s3://bucket-name/snapshot-name"}'
 ```
 
 ### Change Embedding Model
@@ -226,7 +280,15 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 
 ### Persistent Storage
 
-Data is stored in `./qdrant_storage/` and persists across restarts.
+**Local Storage (Default):**
+- Data is stored in `./qdrant_storage/` and persists across restarts
+- Suitable for development and small-scale deployments
+
+**S3 Storage:**
+- Configure S3 credentials in `.env` file (see S3 Storage Configuration section)
+- Snapshots are automatically backed up to S3
+- Ideal for production deployments with automatic backups
+- Can be configured for S3-only mode without local storage
 
 ## 📊 Monitoring
 
