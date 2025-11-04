@@ -9,8 +9,17 @@ A production-ready, full-stack semantic search platform powered by Qdrant vector
 
 ## 🖼️ Screenshots
 
+### Web Dashboard
 ![Web Dashboard](screenshots/img2.png)
 *Modern, intuitive web interface for managing documents and performing semantic searches*
+
+### Search Interface
+![Search Interface](screenshots/img1.png)
+*Powerful semantic search with real-time results and similarity scores*
+
+### Document Management
+![Document Management](screenshots/img3.png)
+*Easy document management with metadata support and visual feedback*
 
 ## 🛠️ Tech Stack
 
