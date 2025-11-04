@@ -18,11 +18,6 @@ jobs:
         ports:
           - 6333:6333
           - 6334:6334
-        options: >-
-          --health-cmd "curl -f http://localhost:6333/readyz || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     
     steps:
     - name: Checkout code
@@ -35,36 +30,43 @@ jobs:
         cache: 'pip'
     
     - name: Install dependencies
-      working-directory: ./api
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r api/requirements.txt
     
     - name: Wait for Qdrant to be ready
       run: |
         echo "Waiting for Qdrant to be ready..."
-        timeout 60 bash -c 'until curl -f http://localhost:6333/readyz; do sleep 2; done'
-        echo "Qdrant is ready!"
+        for i in {1..30}; do
+          if curl -s http://localhost:6333/collections > /dev/null 2>&1; then
+            echo "Qdrant is ready!"
+            exit 0
+          fi
+          echo "Attempt $i: Qdrant not ready yet, waiting..."
+          sleep 2
+        done
+        echo "Qdrant failed to become ready"
+        exit 1
     
     - name: Verify Qdrant connection
       run: |
         curl -s http://localhost:6333/collections || echo "Qdrant API check"
     
     - name: Run tests with pytest
-      working-directory: ./api
       env:
         QDRANT_HOST: localhost
         QDRANT_PORT: 6333
       run: |
+        cd api
         pytest test_main.py -v --tb=short --color=yes
     
     - name: Generate test report
       if: always()
-      working-directory: ./api
       env:
         QDRANT_HOST: localhost
         QDRANT_PORT: 6333
       run: |
+        cd api
         pytest test_main.py --tb=short --junit-xml=test-results.xml || true
     
     - name: Upload test results
@@ -104,8 +106,8 @@ jobs:
         pip install flake8 black
     
     - name: Run flake8
-      working-directory: ./api
       run: |
+        cd api
         # Stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # Exit-zero treats all errors as warnings
@@ -113,8 +115,8 @@ jobs:
       continue-on-error: true
     
     - name: Check code formatting with black
-      working-directory: ./api
       run: |
+        cd api
         black --check --diff .
       continue-on-error: true
 
@@ -131,21 +133,20 @@ jobs:
         python-version: '3.11'
     
     - name: Install dependencies
-      working-directory: ./api
       run: |
         python -m pip install --upgrade pip
         pip install safety bandit
     
     - name: Run safety check
-      working-directory: ./api
       run: |
-        pip install -r requirements.txt
+        pip install -r api/requirements.txt
+        cd api
         safety check || true
       continue-on-error: true
     
     - name: Run bandit security scan
-      working-directory: ./api
       run: |
+        cd api
         bandit -r . -f json -o bandit-report.json || true
         bandit -r . || true
       continue-on-error: true
