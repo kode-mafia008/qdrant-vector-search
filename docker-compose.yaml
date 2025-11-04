@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_vector_db
+    env_file:
+      - .env
+    ports:
+      - "${QDRANT_HTTP_PORT}:6333"  # REST API
+      - "${QDRANT_GRPC_PORT}:6334"  # gRPC API
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - qdrant_network
+
+  api:
+    build: ./api
+    container_name: qdrant_api
+    env_file:
+      - .env
+    ports:
+      - "${API_PORT}:8000"
+    depends_on:
+      - qdrant
+    volumes:
+      - ./api:/app
+    networks:
+      - qdrant_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  web:
+    build: ./web
+    container_name: qdrant_web_ui
+    env_file:
+      - .env
+    ports:
+      - "${WEB_PORT}:80"
+    depends_on:
+      - api
+    volumes:
+      - ./web/index.html:/usr/share/nginx/html/index.html
+    networks:
+      - qdrant_network
+
+networks:
+  qdrant_network:
+    driver: bridge
+
+volumes:
+  qdrant_storage:
