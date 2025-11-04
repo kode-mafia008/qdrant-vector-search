@@ -84,6 +84,12 @@ Desktop.ini
 .coverage
 htmlcov/
 .tox/
+test-results.xml
+coverage.xml
+*.pytest_cache
+.coverage.*
+junit.xml
+test_results/
 
 # mypy
 .mypy_cache/

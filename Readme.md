@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com/)
 [![Qdrant](https://img.shields.io/badge/Qdrant-latest-red.svg)](https://qdrant.tech/)
+[![CI/CD Tests](https://github.com/kode-mafia008/qdrant-vector-search/actions/workflows/test.yml/badge.svg)](https://github.com/kode-mafia008/qdrant-vector-search/actions/workflows/test.yml)
 
 A production-ready, full-stack semantic search platform powered by Qdrant vector database, FastAPI backend, and a modern web UI. Build intelligent search applications with natural language understanding out of the box.
 
@@ -313,6 +314,8 @@ Visit http://localhost:6333/dashboard to see:
 
 ## 🧪 Testing
 
+### Manual Testing
+
 ```bash
 # Test API health
 curl http://localhost:8000/health
@@ -325,6 +328,63 @@ curl -X POST "http://localhost:8000/documents" \
   -H "Content-Type: application/json" \
   -d '{"text": "Hello world", "metadata": {"test": true}}'
 ```
+
+### Automated Testing
+
+The project includes comprehensive automated tests for all API endpoints.
+
+**Running Tests Locally:**
+
+```bash
+# Install test dependencies (if not already installed)
+cd api
+pip install -r requirements.txt
+
+# Make sure Qdrant is running
+docker compose up -d qdrant
+
+# Run all tests
+pytest test_main.py -v
+
+# Run specific test class
+pytest test_main.py::TestHealthEndpoints -v
+
+# Run with coverage report
+pytest test_main.py --cov=main --cov-report=html
+```
+
+**Test Coverage:**
+
+The test suite includes:
+- ✅ **Health & Status Tests** - API health checks and connectivity
+- ✅ **Document CRUD Tests** - Create, read, update, delete operations
+- ✅ **Search Tests** - Semantic search functionality with various queries
+- ✅ **Collection Management Tests** - Create, list, and delete collections
+- ✅ **Error Handling Tests** - Edge cases and error scenarios
+- ✅ **Integration Tests** - Complete workflows and multi-step operations
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment. Tests run automatically on every push to the `main` branch.
+
+**CI/CD Pipeline includes:**
+- 🧪 **Automated Testing** - Full test suite execution with Qdrant service
+- 🔍 **Code Linting** - flake8 and black code quality checks
+- 🔒 **Security Scanning** - safety and bandit security analysis
+- 🐳 **Docker Build** - Validates Docker images build successfully
+- 📊 **Test Reports** - JUnit XML reports and artifacts
+
+**View CI/CD Status:**
+
+Check the [Actions tab](../../actions) in the GitHub repository to see test results and pipeline status.
+
+**Pipeline Configuration:**
+
+The CI/CD workflow is defined in `.github/workflows/test.yml` and runs:
+1. Unit and integration tests with pytest
+2. Code quality checks with flake8 and black
+3. Security vulnerability scanning
+4. Docker image build validation
 
 ## 🔄 Management Commands
 
