@@ -9,7 +9,7 @@ A production-ready, full-stack semantic search platform powered by Qdrant vector
 
 ## 🖼️ Screenshots
 
-![Web Dashboard](https://via.placeholder.com/800x400?text=Web+Dashboard+Screenshot)
+![Web Dashboard](screenshots/img2.png)
 *Modern, intuitive web interface for managing documents and performing semantic searches*
 
 ## 🛠️ Tech Stack
@@ -37,7 +37,7 @@ A production-ready, full-stack semantic search platform powered by Qdrant vector
 ### 1. Clone & Setup
 
 ```bash
-git clone https://github.com/yourusername/qdrant-vector-search.git
+git clone https://github.com/kode-mafia008/qdrant-vector-search.git
 cd qdrant-vector-search
 
 # Copy environment template
@@ -398,7 +398,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 📖 [Documentation](https://qdrant.tech/documentation/)
 - 💬 [Qdrant Discord](https://discord.gg/qdrant)
-- 🐛 [Issues](https://github.com/yourusername/qdrant-vector-search/issues)
+- 🐛 [Issues](https://github.com/kode-mafia008/qdrant-vector-search/issues)
 
 ---
 
